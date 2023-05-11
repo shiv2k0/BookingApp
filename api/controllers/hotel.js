@@ -1,6 +1,6 @@
-import Hotel from "../models/Hotel.js";
+const Hotel = require("../models/Hotel");
 
-export const createHotel = async (req, res, next) => {
+const createHotel = async (req, res, next) => {
   const newHotel = new Hotel(req.body);
   try {
     const savedHotel = await newHotel.save();
@@ -10,7 +10,7 @@ export const createHotel = async (req, res, next) => {
   }
 };
 
-export const updateHotel = async (req, res, next) => {
+const updateHotel = async (req, res, next) => {
   try {
     const updatedHotel = await Hotel.findByIdAndUpdate(
       req.params.id,
@@ -25,7 +25,7 @@ export const updateHotel = async (req, res, next) => {
   }
 };
 
-export const deleteHotel = async (req, res, next) => {
+const deleteHotel = async (req, res, next) => {
   try {
     await Hotel.findByIdAndDelete(req.params.id);
     res.status(200).json("Hotel have been deleted");
@@ -34,7 +34,7 @@ export const deleteHotel = async (req, res, next) => {
   }
 };
 
-export const getHotel = async (req, res, next) => {
+const getHotel = async (req, res, next) => {
   try {
     const hotel = await Hotel.findById(req.params.id);
     res.status(200).json(hotel);
@@ -43,7 +43,7 @@ export const getHotel = async (req, res, next) => {
   }
 };
 
-export const getHotels = async (req, res, next) => {
+const getHotels = async (req, res, next) => {
   try {
     const hotels = await Hotel.find();
     res.status(200).json(hotels);
@@ -51,3 +51,5 @@ export const getHotels = async (req, res, next) => {
     next(err);
   }
 };
+
+module.exports = { createHotel, updateHotel, deleteHotel, getHotel, getHotels };

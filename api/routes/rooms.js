@@ -1,13 +1,12 @@
-import express from "express";
-import { verifyAdmin } from "../utils/verifyToken.js";
-import {
+const express = require("express");
+const { verifyAdmin } = require("../utils/verifyToken");
+const {
   createRoom,
   deleteRoom,
   getRoom,
   getRooms,
   updateRoom,
-} from "../controllers/room.js";
-
+} = require("../controllers/room");
 const router = express.Router();
 
 router.post("/:hotelid", verifyAdmin, createRoom);
@@ -19,4 +18,4 @@ router.get("/:id", getRoom);
 
 router.get("/", getRooms);
 
-export default router;
+module.exports = router;

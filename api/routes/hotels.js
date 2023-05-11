@@ -1,12 +1,14 @@
-import express from "express";
-import {
+const express = require("express");
+const Hotel = require("../models/Hotel");
+const createError = require("../utils/error");
+const {
   createHotel,
   deleteHotel,
   getHotel,
   getHotels,
   updateHotel,
-} from "../controllers/hotel.js";
-import { verifyAdmin } from "../utils/verifyToken.js";
+} = require("../controllers/hotel");
+const { verifyAdmin } = require("../utils/verifyToken");
 
 const router = express.Router();
 
@@ -19,4 +21,4 @@ router.get("/:id", getHotel);
 
 router.get("/", getHotels);
 
-export default router;
+module.exports = router;
