@@ -1,23 +1,18 @@
+import { Link } from "react-router-dom";
 import "./searchItem.css";
 
-const SearchItem = () => {
+const SearchItem = ({ item }) => {
   return (
     <div className="searchItem">
-      <img
-        src="https://images.pexels.com/photos/3659683/pexels-photo-3659683.jpeg?auto=compress&cs=tinysrgb&w=1600"
-        alt=""
-        className="siImg"
-      />
+      <img src={item.photos[0]} alt="" className="siImg" />
       <div className="siDesc">
-        <h1 className="siTitle">Tower Street Apartments</h1>
-        <span className="siDistance">500m from centrer</span>
+        <h1 className="siTitle">{item.name}</h1>
+        <span className="siDistance">{item.distance}m from center</span>
         <span className="siTaxiOp">Free airport taxi</span>
         <span className="siSubtitle">
           Studio Apartment with Air conditioning
         </span>
-        <span className="siFeatures">
-          Entire studio 1 bathroom 21m sq full bed
-        </span>
+        <span className="siFeatures">{item.desc}</span>
         <span className="siCancelOp">Free cancellation</span>
         <span className="siCancelOpSubtitle">
           You can cancel later, so lock this great price today!
@@ -25,15 +20,19 @@ const SearchItem = () => {
       </div>
       <div className="siDetails">
         <div>
-          <div className="siRating">
-            <span>Excellent</span>
-            <span className="rating">8.9</span>
-          </div>
+          {item.rating && (
+            <div className="siRating">
+              <span>Excellent</span>
+              <span className="rating">{item.rating}</span>
+            </div>
+          )}
         </div>
         <div className="siRight">
-          <div className="siPrice">$112</div>
+          <div className="siPrice">${item.cheapestPrice}</div>
           <div className="siTaxOp">Includes taxes and fees</div>
-          <button className="siCheckButton">See availability</button>
+          <Link to={`/hotels/${item._id}`}>
+            <button className="siCheckButton">See availability</button>
+          </Link>
         </div>
       </div>
     </div>

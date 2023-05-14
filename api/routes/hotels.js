@@ -1,12 +1,12 @@
 const express = require("express");
-const Hotel = require("../models/Hotel");
-const createError = require("../utils/error");
 const {
   createHotel,
   deleteHotel,
   getHotel,
   getHotels,
   updateHotel,
+  countByCity,
+  countByType,
 } = require("../controllers/hotel");
 const { verifyAdmin } = require("../utils/verifyToken");
 
@@ -17,8 +17,10 @@ router.put("/:id", verifyAdmin, updateHotel);
 
 router.delete("/:id", verifyAdmin, deleteHotel);
 
-router.get("/:id", getHotel);
+router.get("/find/:id", getHotel);
 
 router.get("/", getHotels);
+router.get("/countByCity", countByCity);
+router.get("/countByType", countByType);
 
 module.exports = router;
