@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import "./header.css";
 import { FaBed, FaCalendarDay, FaCar, FaPlane, FaTaxi } from "react-icons/fa";
 import { GiPerson } from "react-icons/gi";
@@ -7,6 +7,8 @@ import "react-date-range/dist/theme/default.css";
 import { DateRange } from "react-date-range";
 import format from "date-fns/format";
 import { useNavigate } from "react-router-dom";
+import { SearchContext } from "../../context/SearchContext";
+import { AuthContext } from "../../context/AuthContext";
 
 const Header = ({ type }) => {
   const [openDate, setOpenDate] = useState(false);
@@ -17,7 +19,9 @@ const Header = ({ type }) => {
     children: 0,
     room: 1,
   });
-  const [date, setDate] = useState([
+
+  const { user } = useContext(AuthContext);
+  const [dates, setDates] = useState([
     {
       startDate: new Date(),
       endDate: new Date(),
@@ -25,6 +29,9 @@ const Header = ({ type }) => {
     },
   ]);
   const navigate = useNavigate();
+  const handleSignIn = () => {
+    navigate("/login");
+  };
   const handleOption = (name, operation) => {
     setOptions((prev) => {
       return {
@@ -33,8 +40,11 @@ const Header = ({ type }) => {
       };
     });
   };
+  const { dispatch } = useContext(SearchContext);
+
   const handleSearch = () => {
-    navigate("/hotels", { state: { destination, date, options } });
+    dispatch({ type: "NEW_SEARCH", payload: { destination, dates, options } });
+    navigate("/hotels", { state: { destination, dates, options } });
   };
   return (
     <div className="header">
@@ -74,7 +84,11 @@ const Header = ({ type }) => {
               Get rewarded for your travels - unlock instant savings of 10% or
               more with a free BookingApp account
             </p>
-            <button className="headerBtn">Sign in / Register</button>
+            {!user && (
+              <button className="headerBtn" onClick={handleSignIn}>
+                Sign in / Register
+              </button>
+            )}
             <div className="headerSearch">
               <div className="headerSearchItem">
                 <FaBed className="headerIcon" />
@@ -91,17 +105,17 @@ const Header = ({ type }) => {
                   onClick={() => setOpenDate((prev) => !prev)}
                   className="headerSearchText"
                 >
-                  {`${format(date[0].startDate, "MM/dd/yyyy")} to ${format(
-                    date[0].endDate,
+                  {`${format(dates[0].startDate, "MM/dd/yyyy")} to ${format(
+                    dates[0].endDate,
                     "MM/dd/yyyy"
                   )}`}
                 </span>
                 {openDate && (
                   <DateRange
                     editableDateInputs={true}
-                    onChange={(item) => setDate([item.selection])}
+                    onChange={(item) => setDates([item.selection])}
                     moveRangeOnFirstSelection={false}
-                    ranges={date}
+                    ranges={dates}
                     className="date"
                   />
                 )}

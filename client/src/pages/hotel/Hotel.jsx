@@ -2,19 +2,25 @@ import Header from "../../components/header/Header";
 import { MdLocationOn, MdOutlineLocationOn } from "react-icons/md";
 import "./hotel.css";
 import MailList from "../../components/mailList/MailList";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { FaChevronCircleLeft, FaChevronCircleRight } from "react-icons/fa";
 import { RxCross2 } from "react-icons/rx";
 import useFetch from "../../hooks/useFetch";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { SearchContext } from "../../context/SearchContext";
+import { AuthContext } from "../../context/AuthContext";
+import Reserve from "../../components/reserve/Reserve";
 
 const Hotel = () => {
   const [open, setOpen] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
   const [sliderNumber, setSliderNumber] = useState(0);
   const location = useLocation();
   const id = location.pathname.split("/")[2];
 
   const { data, loading, error } = useFetch(`/hotels/find/${id}`);
+  const { dates, destination, options } = useContext(SearchContext);
+  const { user } = useContext(AuthContext);
 
   const handleClick = (index) => {
     setOpen(true);
@@ -34,7 +40,24 @@ const Hotel = () => {
       setSliderNumber(sliderNumber + 1);
     }
   };
-  console.log(data);
+
+  const navigate = useNavigate();
+  const handleBook = () => {
+    if (user) {
+      setOpenModal(true);
+    } else {
+      navigate("/login");
+    }
+  };
+
+  const MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
+  const dayDifference = (date1, date2) => {
+    const timeDiff = Math.abs(date2.getTime() - date1.getTime());
+    const diffDays = Math.ceil(timeDiff / MILLISECONDS_PER_DAY);
+    return diffDays;
+  };
+
+  const days = dayDifference(dates[0].endDate, dates[0].startDate);
   return (
     <div>
       <Header type="list" />
@@ -52,11 +75,15 @@ const Hotel = () => {
         <>
           <div className="hotelContainer">
             <div className="hotelWrapper">
-              <button className="bookNow">Reserve or Book Now!</button>
+              <button className="bookNow" onClick={handleBook}>
+                Reserve or Book Now!
+              </button>
               <h1 className="hotelTitle">{data.name}</h1>
               <div className="hotelAddress">
                 <MdLocationOn />
-                <span>{data.address}</span>
+                <span>
+                  {data.address}, {destination}
+                </span>
               </div>
               <span className="hotelDistance">
                 Excellent location - 500m from center
@@ -83,17 +110,19 @@ const Hotel = () => {
                   <p className="hotelDesc">{data.desc}</p>
                 </div>
                 <div className="hotelDetailsPrice">
-                  <h1>Perfect for a 9-night stay!</h1>
+                  <h1>Perfect for a {days}-night stay!</h1>
                   <span>
                     Located in the real heart of Krakow, this property has as
-                    exvellent location score of 9.8!
+                    excellent location score of 9.8!
                   </span>
                   <h2>
-                    <b>$945</b> (9 nights){" "}
+                    <b>${days * data.cheapestPrice * options.room}</b> ({days}{" "}
+                    nights)
                   </h2>
-                  <button>Reserve or Book Now!</button>
+                  <button onClick={handleBook}>Reserve or Book Now!</button>
                 </div>
               </div>
+              {openModal && <Reserve setOpen={setOpenModal} hotelId={id} />}
             </div>
           </div>
           <MailList />
